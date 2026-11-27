@@ -1,21 +1,64 @@
 import { useEffect, useState } from "react";
-import { taskApi } from "./api/taskApi.js";
-import TaskForm from "./components/TaskForm.jsx";
-import TaskList from "./components/TaskList.jsx";
-import UserForm from "./components/UserForm.jsx";
+import { taskApi } from "./api/taskApi";
+import TaskForm from "./components/TaskForm";
+import TaskList from "./components/TaskList";
+import UserForm from "./components/UserForm";
+import UserTable from "./components/UserTable";
+import { userApi } from "./api/userApi";
+import type { Task, User } from "./types";
 
 export default function App() {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [error, setError] = useState("");
+  const [users, setUsers] = useState<User[]>([]);
+  const [usersLoading, setUsersLoading] = useState(true);
+  const [usersError, setUsersError] = useState("");
+  const [userActionNotice, setUserActionNotice] = useState("");
 
   useEffect(() => {
     taskApi
       .getAll()
       .then(setTasks)
       .catch(() => setError("Could not load tasks. Is the API running?"));
+
+    userApi
+      .getAll()
+      .then((loadedUsers) => {
+        setUsers((currentUsers) => {
+          const usersById = new Map(loadedUsers.map((user) => [user.id, user]));
+          currentUsers.forEach((user) => usersById.set(user.id, user));
+          return Array.from(usersById.values());
+        });
+      })
+      .catch(() => setUsersError("Could not load users. Is the API running?"))
+      .finally(() => setUsersLoading(false));
   }, []);
 
-  async function handleAddTask(title) {
+  function handleUserCreated(user: User) {
+    setUsers((currentUsers) => [
+      user,
+      ...currentUsers.filter((currentUser) => currentUser.id !== user.id),
+    ]);
+    setUserActionNotice("");
+  }
+
+  async function handleUpdateUser(user: User): Promise<void> {
+    const updatedUser = await userApi.update(user);
+    setUsers((currentUsers) =>
+      currentUsers.map((currentUser) =>
+        currentUser.id === updatedUser.id ? updatedUser : currentUser,
+      ),
+    );
+    setUserActionNotice("User updated.");
+  }
+
+  async function handleDeleteUser(id: string): Promise<void> {
+    await userApi.remove(id);
+    setUsers((currentUsers) => currentUsers.filter((user) => user.id !== id));
+    setUserActionNotice("User deleted.");
+  }
+
+  async function handleAddTask(title: string): Promise<boolean> {
     try {
       const task = await taskApi.create(title);
       setTasks((current) => [...current, task]);
@@ -27,7 +70,7 @@ export default function App() {
     }
   }
 
-  async function handleToggleTask(task) {
+  async function handleToggleTask(task: Task): Promise<void> {
     try {
       const updatedTask = await taskApi.updateCompletion(task.id, !task.completed);
       setTasks((current) =>
@@ -39,7 +82,7 @@ export default function App() {
     }
   }
 
-  async function handleDeleteTask(task) {
+  async function handleDeleteTask(task: Task): Promise<void> {
     try {
       await taskApi.remove(task.id);
       setTasks((current) => current.filter((item) => item.id !== task.id));
@@ -72,7 +115,19 @@ export default function App() {
           <p className="section-description">
             Add a learner profile with a name and email address.
           </p>
-          <UserForm />
+          <UserForm onUserCreated={handleUserCreated} />
+          <div className="user-list-heading">
+            <h3>Registered users</h3>
+            <span className="endpoint-badge">GET /api/users</span>
+          </div>
+          <UserTable
+            users={users}
+            isLoading={usersLoading}
+            error={usersError}
+            actionNotice={userActionNotice}
+            onUpdateUser={handleUpdateUser}
+            onDeleteUser={handleDeleteUser}
+          />
         </section>
 
         <div className="task-section-heading">

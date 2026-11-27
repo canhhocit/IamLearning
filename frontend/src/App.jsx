@@ -1,36 +1,34 @@
 import { useEffect, useState } from "react";
-import { tasksApi } from "./api.js";
+import { taskApi } from "./api/taskApi.js";
+import TaskForm from "./components/TaskForm.jsx";
+import TaskList from "./components/TaskList.jsx";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
-  const [title, setTitle] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    tasksApi
-      .list()
+    taskApi
+      .getAll()
       .then(setTasks)
       .catch(() => setError("Could not load tasks. Is the API running?"));
   }, []);
 
-  async function addTask(event) {
-    event.preventDefault();
-    const trimmedTitle = title.trim();
-    if (!trimmedTitle) return;
-
+  async function handleAddTask(title) {
     try {
-      const task = await tasksApi.create(trimmedTitle);
+      const task = await taskApi.create(title);
       setTasks((current) => [...current, task]);
-      setTitle("");
       setError("");
+      return true;
     } catch {
       setError("Could not add the task. Please try again.");
+      return false;
     }
   }
 
-  async function toggleTask(task) {
+  async function handleToggleTask(task) {
     try {
-      const updatedTask = await tasksApi.setCompleted(task.id, !task.completed);
+      const updatedTask = await taskApi.updateCompletion(task.id, !task.completed);
       setTasks((current) =>
         current.map((item) => (item.id === updatedTask.id ? updatedTask : item)),
       );
@@ -40,9 +38,9 @@ export default function App() {
     }
   }
 
-  async function deleteTask(task) {
+  async function handleDeleteTask(task) {
     try {
-      await tasksApi.remove(task.id);
+      await taskApi.remove(task.id);
       setTasks((current) => current.filter((item) => item.id !== task.id));
       setError("");
     } catch {
@@ -62,19 +60,7 @@ export default function App() {
           around them.
         </p>
 
-        <form className="task-form" onSubmit={addTask}>
-          <label className="visually-hidden" htmlFor="task-title">
-            New task
-          </label>
-          <input
-            id="task-title"
-            maxLength={200}
-            onChange={(event) => setTitle(event.target.value)}
-            placeholder="What do you want to learn?"
-            value={title}
-          />
-          <button type="submit">Add task</button>
-        </form>
+        <TaskForm onAddTask={handleAddTask} />
 
         {error && (
           <p className="error-message" role="alert">
@@ -89,32 +75,11 @@ export default function App() {
           </span>
         </div>
 
-        {tasks.length === 0 ? (
-          <p className="empty-state">No tasks yet. Add one to get started.</p>
-        ) : (
-          <ul className="task-list">
-            {tasks.map((task) => (
-              <li className="task-item" key={task.id}>
-                <label className={task.completed ? "task-title completed" : "task-title"}>
-                  <input
-                    checked={task.completed}
-                    onChange={() => toggleTask(task)}
-                    type="checkbox"
-                  />
-                  <span>{task.title}</span>
-                </label>
-                <button
-                  aria-label={`Delete ${task.title}`}
-                  className="delete-button"
-                  onClick={() => deleteTask(task)}
-                  type="button"
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        <TaskList
+          tasks={tasks}
+          onToggleTask={handleToggleTask}
+          onDeleteTask={handleDeleteTask}
+        />
 
         <p className="footer-note">Built to learn by doing.</p>
       </section>

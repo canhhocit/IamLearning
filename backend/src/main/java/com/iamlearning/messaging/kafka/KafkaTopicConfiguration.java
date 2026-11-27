@@ -1,4 +1,4 @@
-package com.iamlearning.tasks.infrastructure.messaging;
+package com.iamlearning.messaging.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;

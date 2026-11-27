@@ -16,8 +16,8 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: com.iamlearning.tasks.domain.event
-        spring.json.value.default.type: com.iamlearning.tasks.domain.event.TaskCreatedEvent
+        spring.json.trusted.packages: com.iamlearning.tasks.events
+        spring.json.value.default.type: com.iamlearning.tasks.events.TaskCreatedEvent
         spring.json.use.type.headers: false
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer

@@ -1,7 +1,7 @@
-package com.iamlearning.tasks.infrastructure.messaging;
+package com.iamlearning.messaging.kafka;
 
-import com.iamlearning.tasks.application.TaskEventPublisher;
-import com.iamlearning.tasks.domain.event.TaskCreatedEvent;
+import com.iamlearning.tasks.events.TaskCreatedEvent;
+import com.iamlearning.tasks.events.TaskEventPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;

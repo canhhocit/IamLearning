@@ -1,4 +1,4 @@
-package com.iamlearning.tasks.api.dto;
+package com.iamlearning.tasks.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "test": "node --env-file=.env ./node_modules/@playwright/test/cli.js test",
-    "test:ui": "node --env-file=.env ./node_modules/@playwright/test/cli.js test --ui"
+    "test:ui": "node --env-file=.env ./node_modules/@playwright/test/cli.js test --ui",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@playwright/test": "^1.52.0"
+    "@playwright/test": "^1.52.0",
+    "typescript": "^7.0.2"
   }
 }

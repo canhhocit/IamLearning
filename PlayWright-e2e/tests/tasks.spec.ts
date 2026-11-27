@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+type ApiErrorResponse = {
+  error: string;
+  message: string;
+  validationErrors: Record<string, string>;
+};
+
 test("creates, completes, and deletes a task", async ({ page }) => {
   const taskTitle = `Learn Playwright ${Date.now()}`;
   await page.goto("/");
@@ -17,12 +23,25 @@ test("creates, completes, and deletes a task", async ({ page }) => {
   await expect(taskItem).toHaveCount(0);
 });
 
+test("creates a user from the user form", async ({ page }) => {
+  const userName = `Learner ${Date.now()}`;
+  const userEmail = `learner-${Date.now()}@example.com`;
+  await page.goto("/");
+
+  await page.getByLabel("Name", { exact: true }).fill(userName);
+  await page.getByLabel("Email", { exact: true }).fill(userEmail);
+  await page.getByRole("button", { name: "Create user" }).click();
+
+  await expect(page.getByRole("status")).toContainText(userName);
+  await expect(page.getByRole("status")).toContainText(userEmail);
+});
+
 test("returns a consistent error response for invalid requests", async ({ request }) => {
   const invalidTaskResponse = await request.post("/api/tasks", {
     data: { title: " " },
   });
   expect(invalidTaskResponse.status()).toBe(400);
-  const validationError = await invalidTaskResponse.json();
+  const validationError: ApiErrorResponse = await invalidTaskResponse.json();
   expect(validationError).toMatchObject({
     error: "Bad Request",
     message: "Request validation failed",
@@ -34,7 +53,7 @@ test("returns a consistent error response for invalid requests", async ({ reques
     { data: { completed: true } },
   );
   expect(missingTaskResponse.status()).toBe(404);
-  const notFoundError = await missingTaskResponse.json();
+  const notFoundError: ApiErrorResponse = await missingTaskResponse.json();
   expect(notFoundError).toMatchObject({
     error: "Not Found",
     message: "Task with id '00000000-0000-0000-0000-000000000000' was not found",

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { taskApi } from "./api/taskApi.js";
 import TaskForm from "./components/TaskForm.jsx";
 import TaskList from "./components/TaskList.jsx";
+import UserForm from "./components/UserForm.jsx";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
@@ -60,6 +61,23 @@ export default function App() {
           around them.
         </p>
 
+        <section className="user-section" aria-labelledby="user-section-title">
+          <div className="section-heading">
+            <div>
+              <p className="section-kicker">USER MODULE</p>
+              <h2 id="user-section-title">Create a user</h2>
+            </div>
+            <span className="endpoint-badge">POST /api/users</span>
+          </div>
+          <p className="section-description">
+            Add a learner profile with a name and email address.
+          </p>
+          <UserForm />
+        </section>
+
+        <div className="task-section-heading">
+          <h2>Add a learning task</h2>
+        </div>
         <TaskForm onAddTask={handleAddTask} />
 
         {error && (

@@ -44,7 +44,6 @@ shared/
 ```
 
 `TaskController` handles HTTP and delegates to `TaskService`, `TaskService` contains the use cases and maps DTOs, and `TaskRepository` handles persistence. The `task` module owns the `TaskCreatedEvent` contract; the separate `messaging.kafka` module implements the publisher and consumer using Kafka. This keeps Kafka-specific dependencies out of the task service. Exceptions are translated in one place by `GlobalExceptionHandler`, so endpoints return a consistent error response. Add future business areas as sibling modules rather than mixing their controllers, services, and repositories into `task`.
-
 Database schema changes are versioned as Flyway SQL migrations in `backend/src/main/resources/db/migration/`. Hibernate validates the mapped entities against the migrated schema instead of changing tables automatically.
 
 ## First steps: start infrastructure, then run the apps locally

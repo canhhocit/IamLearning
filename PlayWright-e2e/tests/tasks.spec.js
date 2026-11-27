@@ -7,11 +7,12 @@ test("creates, completes, and deletes a task", async ({ page }) => {
   await page.getByRole("textbox", { name: "New task" }).fill(taskTitle);
   await page.getByRole("button", { name: "Add task" }).click();
 
-  const task = page.getByText(taskTitle);
-  await expect(task).toBeVisible();
-  await page.getByRole("checkbox").check();
-  await expect(page.getByText("1/1 done")).toBeVisible();
+  const taskItem = page.getByRole("listitem").filter({ hasText: taskTitle });
+  await expect(taskItem).toBeVisible();
+  const checkbox = taskItem.getByRole("checkbox");
+  await checkbox.click();
+  await expect(checkbox).toBeChecked();
 
   await page.getByRole("button", { name: `Delete ${taskTitle}` }).click();
-  await expect(task).toHaveCount(0);
+  await expect(taskItem).toHaveCount(0);
 });

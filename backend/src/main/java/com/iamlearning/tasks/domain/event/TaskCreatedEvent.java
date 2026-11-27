@@ -1,4 +1,6 @@
-package com.iamlearning.tasks;
+package com.iamlearning.tasks.domain.event;
+
+import com.iamlearning.tasks.domain.Task;
 
 import java.time.Instant;
 import java.util.UUID;

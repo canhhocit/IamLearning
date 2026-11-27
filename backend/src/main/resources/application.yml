@@ -1,0 +1,39 @@
+spring:
+  config:
+    import: "optional:file:.env[.properties]"
+  datasource:
+    url: "${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/learning}"
+    username: "${SPRING_DATASOURCE_USERNAME:learning}"
+    password: "${SPRING_DATASOURCE_PASSWORD:learning}"
+  jpa:
+    hibernate:
+      ddl-auto: update
+  kafka:
+    bootstrap-servers: "${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}"
+    consumer:
+      group-id: task-events
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.iamlearning.tasks.domain.event
+        spring.json.value.default.type: com.iamlearning.tasks.domain.event.TaskCreatedEvent
+        spring.json.use.type.headers: false
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+server:
+  port: "${BACKEND_PORT:8080}"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true

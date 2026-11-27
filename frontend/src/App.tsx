@@ -93,69 +93,127 @@ export default function App() {
   }
 
   const completedCount = tasks.filter((task) => task.completed).length;
+  const completionRate =
+    tasks.length === 0 ? 0 : Math.round((completedCount / tasks.length) * 100);
 
   return (
     <main className="page">
-      <section className="task-card" aria-labelledby="page-title">
-        <p className="eyebrow">HANDS-ON LEARNING LAB</p>
-        <h1 id="page-title">Small steps, real skills.</h1>
-        <p className="intro">
-          A simple task tracker to explore React, Spring Boot, and the tools
-          around them.
-        </p>
+      <div className="ambient-glow ambient-glow--cyan" aria-hidden="true" />
+      <div className="ambient-glow ambient-glow--indigo" aria-hidden="true" />
 
-        <section className="user-section" aria-labelledby="user-section-title">
-          <div className="section-heading">
-            <div>
-              <p className="section-kicker">USER MODULE</p>
-              <h2 id="user-section-title">Create a user</h2>
+      <div className="shell">
+        <header className="hero-header">
+          <div className="hero-copy">
+            <div className="eyebrow-row">
+              <span className="live-dot" aria-hidden="true" />
+              <p className="eyebrow">HANDS-ON LEARNING LAB</p>
             </div>
-            <span className="endpoint-badge">POST /api/users</span>
+            <h1 id="page-title">Small steps, real skills.</h1>
+            <p className="intro">
+              A full-stack workspace to explore React, Spring Boot, PostgreSQL,
+              Kafka, and Playwright in real time.
+            </p>
           </div>
-          <p className="section-description">
-            Add a learner profile with a name and email address.
-          </p>
-          <UserForm onUserCreated={handleUserCreated} />
-          <div className="user-list-heading">
-            <h3>Registered users</h3>
-            <span className="endpoint-badge">GET /api/users</span>
+
+          <div className="kpi-strip" aria-label="Workspace summary">
+            <div className="kpi-card kpi-card--cyan">
+              <span className="kpi-label">LEARNERS</span>
+              <strong className="kpi-value">{users.length}</strong>
+              <span className="kpi-meta">Active profiles</span>
+            </div>
+            <div className="kpi-card kpi-card--emerald">
+              <span className="kpi-label">TASKS DONE</span>
+              <strong className="kpi-value">
+                {completedCount}/{tasks.length}
+              </strong>
+              <span className="kpi-meta">Completed items</span>
+            </div>
+            <div className="kpi-card kpi-card--indigo">
+              <span className="kpi-label">PROGRESS</span>
+              <strong className="kpi-value">{completionRate}%</strong>
+              <div className="kpi-progress-track" aria-hidden="true">
+                <div
+                  className="kpi-progress-fill"
+                  style={{ width: `${completionRate}%` }}
+                />
+              </div>
+            </div>
           </div>
-          <UserTable
-            users={users}
-            isLoading={usersLoading}
-            error={usersError}
-            actionNotice={userActionNotice}
-            onUpdateUser={handleUpdateUser}
-            onDeleteUser={handleDeleteUser}
-          />
-        </section>
+        </header>
 
-        <div className="task-section-heading">
-          <h2>Add a learning task</h2>
+        <div className="dashboard-grid">
+          <section
+            className="glass-panel user-section"
+            aria-labelledby="user-section-title"
+          >
+            <div className="section-heading">
+              <div>
+                <p className="section-kicker">USER MODULE</p>
+                <h2 id="user-section-title">Create a user</h2>
+              </div>
+              <span className="endpoint-badge">POST /api/users</span>
+            </div>
+            <p className="section-description">
+              Add a learner profile with a name and email address.
+            </p>
+
+            <UserForm onUserCreated={handleUserCreated} />
+
+            <div className="user-list-heading">
+              <h3>Registered users</h3>
+              <span className="endpoint-badge">GET /api/users</span>
+            </div>
+
+            <UserTable
+              users={users}
+              isLoading={usersLoading}
+              error={usersError}
+              actionNotice={userActionNotice}
+              onUpdateUser={handleUpdateUser}
+              onDeleteUser={handleDeleteUser}
+            />
+          </section>
+
+          <section
+            className="glass-panel task-section"
+            aria-labelledby="task-section-title"
+          >
+            <div className="section-heading">
+              <div>
+                <p className="section-kicker">TASK TRACKER</p>
+                <h2 id="task-section-title">Add a learning task</h2>
+              </div>
+              <span className="endpoint-badge">POST /api/tasks</span>
+            </div>
+            <p className="section-description">
+              Track milestones, toggle completion, and publish Kafka events.
+            </p>
+
+            <TaskForm onAddTask={handleAddTask} />
+
+            {error && (
+              <p className="error-message" role="alert">
+                {error}
+              </p>
+            )}
+
+            <div className="list-heading">
+              <h2>Your learning tasks</h2>
+              <span className="count-pill">
+                {completedCount}/{tasks.length} done
+              </span>
+            </div>
+
+            <TaskList
+              tasks={tasks}
+              onToggleTask={handleToggleTask}
+              onDeleteTask={handleDeleteTask}
+            />
+          </section>
         </div>
-        <TaskForm onAddTask={handleAddTask} />
 
-        {error && (
-          <p className="error-message" role="alert">
-            {error}
-          </p>
-        )}
-
-        <div className="list-heading">
-          <h2>Your learning tasks</h2>
-          <span>
-            {completedCount}/{tasks.length} done
-          </span>
-        </div>
-
-        <TaskList
-          tasks={tasks}
-          onToggleTask={handleToggleTask}
-          onDeleteTask={handleDeleteTask}
-        />
-
-        <p className="footer-note">Built to learn by doing.</p>
-      </section>
+        <footer className="footer-note">Built to learn by doing.</footer>
+      </div>
     </main>
   );
 }

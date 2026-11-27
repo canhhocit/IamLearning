@@ -44,6 +44,7 @@ shared/
 ```
 
 `TaskController` handles HTTP and delegates to `TaskService`, `TaskService` contains the use cases and maps DTOs, and `TaskRepository` handles persistence. The `task` module owns the `TaskCreatedEvent` contract; the separate `messaging.kafka` module implements the publisher and consumer using Kafka. This keeps Kafka-specific dependencies out of the task service. Exceptions are translated in one place by `GlobalExceptionHandler`, so endpoints return a consistent error response. Add future business areas as sibling modules rather than mixing their controllers, services, and repositories into `task`.
+Database schema changes are versioned as Flyway SQL migrations in `backend/src/main/resources/db/migration/`. Hibernate validates the mapped entities against the migrated schema instead of changing tables automatically.
 
 ## First steps: start infrastructure, then run the apps locally
 
@@ -95,9 +96,10 @@ Prerequisites: Docker Desktop with its Linux engine running, Java 17+, Maven, an
    npm.cmd install
    npx.cmd playwright install chromium
    npm.cmd test
+   npm.cmd run typecheck
    ```
 
-   Playwright reads `PlayWright-e2e/.env`, reuses the already-running app, or starts the backend and frontend itself if they are not running. The test creates, completes, and deletes a task.
+   Playwright reads `PlayWright-e2e/.env`, reuses the already-running app, or starts the backend and frontend itself if they are not running. The tests cover task CRUD, user creation, and API validation errors. The test files use TypeScript; `typecheck` runs a separate TypeScript check.
 
 Stop the manually started apps with `Ctrl+C`. Stop Kafka and PostgreSQL when finished:
 
@@ -136,7 +138,7 @@ The Kubernetes manifests are minimal learning examples, not production deploymen
 
 - [ ] **React + REST:** follow the task list flow from the UI to the Spring Boot controller and back.
 - [ ] **PostgreSQL:** trace a task through `TaskService` and `TaskRepository`; inspect the generated table and persistent data.
-- [ ] **Playwright:** inspect `PlayWright-e2e/playwright.config.js` and `PlayWright-e2e/tests/tasks.spec.js`; experiment with locators, assertions, and test isolation.
+- [ ] **Playwright:** inspect `PlayWright-e2e/playwright.config.js` and `PlayWright-e2e/tests/tasks.spec.ts`; experiment with locators, assertions, and test isolation.
 - [ ] **Kafka:** trace the `task.created` event contract from `task/event` through `messaging/kafka/KafkaTaskEventPublisher` to `KafkaTaskEventConsumer`; inspect topic, key, payload, and consumer group.
 - [ ] **Docker:** inspect `docker-compose.yml`; experiment with the Kafka and PostgreSQL services and their environment variables.
 - [ ] **Kubernetes:** inspect `k8s/`; learn Deployments, Services, health probes, image loading, and scaling.
@@ -151,5 +153,6 @@ Build each step on the same app to see how the tools fit together. The goal is t
 | `POST` | `/api/tasks` | Create a task with `{ "title": "Learn Playwright" }`; stores it in PostgreSQL and publishes a `task.created` Kafka event |
 | `PATCH` | `/api/tasks/{id}` | Set completion with `{ "completed": true }` |
 | `DELETE` | `/api/tasks/{id}` | Delete a task |
+| `POST` | `/api/users` | Create a user with `{ "name": "Alex", "email": "alex@example.com" }` |
 
 Run backend tests from `backend/` with `mvn test`. Build the frontend from `frontend/` with `npm.cmd run build` on Windows.

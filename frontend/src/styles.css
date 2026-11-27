@@ -63,6 +63,122 @@ h1 {
   line-height: 1.6;
 }
 
+.user-section {
+  padding: 20px;
+  border: 1px solid #e6eaf1;
+  border-radius: 16px;
+  background: #f9fbfe;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.section-kicker {
+  margin: 0 0 5px;
+  color: #2563eb;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.section-heading h2,
+.task-section-heading h2 {
+  margin: 0;
+  font-size: 1.08rem;
+  letter-spacing: -0.02em;
+}
+
+.endpoint-badge {
+  padding: 6px 9px;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.section-description {
+  margin: 9px 0 18px;
+  color: #647087;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.user-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.form-field {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+  color: #344054;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.form-field input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #dce2eb;
+  border-radius: 10px;
+  background: white;
+  color: #172033;
+  outline: none;
+}
+
+.form-field input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 14%);
+}
+
+.user-submit {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.user-submit:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.user-submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.user-feedback {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+.success-message {
+  color: #047857;
+}
+
+.task-section-heading {
+  margin-top: 28px;
+}
+
 .task-form {
   display: flex;
   gap: 10px;
@@ -202,6 +318,23 @@ h1 {
 @media (max-width: 520px) {
   .task-card {
     padding: 28px 20px;
+  }
+
+  .user-section {
+    padding: 16px;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .user-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .user-submit {
+    width: 100%;
   }
 
   .task-form {

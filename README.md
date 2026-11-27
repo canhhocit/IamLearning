@@ -12,7 +12,7 @@ backend/         Spring Boot REST API with PostgreSQL and Kafka
       kafka/     Kafka producer, consumer, topic constants, and topic configuration
     shared/
       exception/ Global API error handling and error responses
-frontend/        React + Vite web application
+frontend/        React + TypeScript + Vite web application
 PlayWright-e2e/  Independent Playwright end-to-end test project
 k8s/             Kubernetes Deployments and Services
 docker-compose.yml  Kafka and PostgreSQL development infrastructure only
@@ -88,6 +88,7 @@ Prerequisites: Docker Desktop with its Linux engine running, Java 17+, Maven, an
    ```
 
    Vite reads `frontend/.env`, serves at `http://localhost:5173`, and proxies `/api` requests to the backend.
+   Run `npm.cmd run typecheck` to check the React TypeScript source.
 
 5. In a third terminal, set up and run the separate Playwright project:
 
@@ -153,6 +154,9 @@ Build each step on the same app to see how the tools fit together. The goal is t
 | `POST` | `/api/tasks` | Create a task with `{ "title": "Learn Playwright" }`; stores it in PostgreSQL and publishes a `task.created` Kafka event |
 | `PATCH` | `/api/tasks/{id}` | Set completion with `{ "completed": true }` |
 | `DELETE` | `/api/tasks/{id}` | Delete a task |
+| `GET` | `/api/users` | List users |
 | `POST` | `/api/users` | Create a user with `{ "name": "Alex", "email": "alex@example.com" }` |
+| `PUT` | `/api/users/{id}` | Update a user's name and email |
+| `DELETE` | `/api/users/{id}` | Delete a user |
 
 Run backend tests from `backend/` with `mvn test`. Build the frontend from `frontend/` with `npm.cmd run build` on Windows.

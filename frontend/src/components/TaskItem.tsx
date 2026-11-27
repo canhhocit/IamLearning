@@ -1,4 +1,12 @@
-export default function TaskItem({ task, onToggle, onDelete }) {
+import type { Task } from "../types";
+
+interface TaskItemProps {
+  task: Task;
+  onToggle: (task: Task) => void;
+  onDelete: (task: Task) => void;
+}
+
+export default function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
   return (
     <li className="task-item">
       <label className={task.completed ? "task-title completed" : "task-title"}>

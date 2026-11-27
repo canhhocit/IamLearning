@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 
-export default function TaskForm({ onAddTask }) {
+interface TaskFormProps {
+  onAddTask: (title: string) => Promise<boolean>;
+}
+
+export default function TaskForm({ onAddTask }: TaskFormProps) {
   const [title, setTitle] = useState("");
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmedTitle = title.trim();
     if (!trimmedTitle) return;

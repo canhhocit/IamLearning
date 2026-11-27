@@ -32,6 +32,11 @@ public class User {
         return new User(UUID.randomUUID(), name, email);
     }
 
+    public void updateProfile(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
     public UUID getId() {
         return id;
     }

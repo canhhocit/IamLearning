@@ -1,14 +1,19 @@
-import { useState } from "react";
-import { userApi } from "../api/userApi.js";
+import { useState, type FormEvent } from "react";
+import { userApi } from "../api/userApi";
+import type { User } from "../types";
 
-export default function UserForm() {
+interface UserFormProps {
+  onUserCreated: (user: User) => void;
+}
+
+export default function UserForm({ onUserCreated }: UserFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [createdUser, setCreatedUser] = useState(null);
+  const [createdUser, setCreatedUser] = useState<User | null>(null);
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setCreatedUser(null);
@@ -16,11 +21,16 @@ export default function UserForm() {
 
     try {
       const user = await userApi.create(name.trim(), email.trim());
+      onUserCreated(user);
       setCreatedUser(user);
       setName("");
       setEmail("");
     } catch (requestError) {
-      setError(requestError.message || "Could not create user. Please try again.");
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Could not create user. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }

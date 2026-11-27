@@ -1,6 +1,17 @@
-import TaskItem from "./TaskItem.jsx";
+import TaskItem from "./TaskItem";
+import type { Task } from "../types";
 
-export default function TaskList({ tasks, onToggleTask, onDeleteTask }) {
+interface TaskListProps {
+  tasks: Task[];
+  onToggleTask: (task: Task) => void;
+  onDeleteTask: (task: Task) => void;
+}
+
+export default function TaskList({
+  tasks,
+  onToggleTask,
+  onDeleteTask,
+}: TaskListProps) {
   if (tasks.length === 0) {
     return <p className="empty-state">No tasks yet. Add one to get started.</p>;
   }

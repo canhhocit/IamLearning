@@ -1,4 +1,4 @@
-package com.iamlearning.tasks;
+package com.iamlearning.tasks.infrastructure.messaging;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +9,7 @@ import org.springframework.kafka.config.TopicBuilder;
 public class KafkaTopicConfiguration {
     @Bean
     NewTopic taskCreatedTopic() {
-        return TopicBuilder.name(TaskEventPublisher.TASK_CREATED_TOPIC)
+        return TopicBuilder.name(KafkaTaskEventPublisher.TASK_CREATED_TOPIC)
                 .partitions(1)
                 .replicas(1)
                 .build();

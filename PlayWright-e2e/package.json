@@ -4,8 +4,8 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "test": "playwright test",
-    "test:ui": "playwright test --ui"
+    "test": "node --env-file=.env ./node_modules/@playwright/test/cli.js test",
+    "test:ui": "node --env-file=.env ./node_modules/@playwright/test/cli.js test --ui"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0"

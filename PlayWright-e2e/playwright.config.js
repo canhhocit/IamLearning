@@ -3,6 +3,8 @@ import { defineConfig, devices } from "@playwright/test";
 const reuseExistingServer = !process.env.CI;
 const backendBaseUrl = process.env.BACKEND_BASE_URL ?? "http://127.0.0.1:8080";
 const frontendBaseUrl = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:5173";
+const backendPort = new URL(backendBaseUrl).port || "8080";
+const frontendPort = new URL(frontendBaseUrl).port || "5173";
 
 export default defineConfig({
   testDir: "./tests",
@@ -23,6 +25,9 @@ export default defineConfig({
       command: "mvn spring-boot:run",
       cwd: "../backend",
       url: `${backendBaseUrl}/actuator/health`,
+      env: {
+        BACKEND_PORT: backendPort,
+      },
       reuseExistingServer,
       timeout: 120_000,
     },
@@ -30,6 +35,10 @@ export default defineConfig({
       command: "npm run dev -- --host 127.0.0.1",
       cwd: "../frontend",
       url: frontendBaseUrl,
+      env: {
+        FRONTEND_PORT: frontendPort,
+        API_PROXY_TARGET: backendBaseUrl,
+      },
       reuseExistingServer,
       timeout: 30_000,
     },

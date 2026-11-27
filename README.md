@@ -7,7 +7,11 @@ A task tracker for learning React, Spring Boot, Playwright, Kafka, PostgreSQL, D
 ```text
 backend/         Spring Boot REST API with PostgreSQL and Kafka
   com.iamlearning/
-    tasks/       Single business module, split into api, application, domain, infrastructure
+    task/        Business module: controller, service, dto, entity, repository, event
+    messaging/
+      kafka/     Kafka producer, consumer, topic constants, and topic configuration
+    shared/
+      exception/ Global API error handling and error responses
 frontend/        React + Vite web application
 PlayWright-e2e/  Independent Playwright end-to-end test project
 k8s/             Kubernetes Deployments and Services
@@ -21,17 +25,25 @@ PlayWright-e2e/.env.example
 
 ## Backend architecture
 
-The backend is one deployable Spring Boot application, organized as a modular monolith. The `tasks` module owns its HTTP API, use cases, domain model, PostgreSQL adapter, and Kafka integration:
+The backend is one deployable Spring Boot application (a modular monolith). Each business module owns its controller, service, DTOs, repository, and infrastructure integrations:
 
 ```text
-tasks/
-  api/             HTTP controllers and request/response DTOs
-  application/     Use cases and outbound ports
-  domain/          Business model, repository port, domain events
-  infrastructure/  PostgreSQL and Kafka adapters
+task/
+  controller/      HTTP endpoints
+  service/         Business logic and transactions
+  dto/
+    request/       Validated API request models
+    response/      API response models
+  entity/          JPA persistence model
+  repository/      Spring Data access
+  event/           Task event contracts
+messaging/
+  kafka/           Kafka adapters, consumers, topic constants, and topic configuration
+shared/
+  exception/       Resource exceptions and global REST error mapping
 ```
 
-Dependencies point inward: the API calls application use cases; application code depends on domain contracts; infrastructure implements those contracts. The domain does not depend on Spring, JPA, or Kafka. Add future business areas as sibling modules instead of letting modules reach into each other's infrastructure.
+`TaskController` handles HTTP and delegates to `TaskService`, `TaskService` contains the use cases and maps DTOs, and `TaskRepository` handles persistence. The `task` module owns the `TaskCreatedEvent` contract; the separate `messaging.kafka` module implements the publisher and consumer using Kafka. This keeps Kafka-specific dependencies out of the task service. Exceptions are translated in one place by `GlobalExceptionHandler`, so endpoints return a consistent error response. Add future business areas as sibling modules rather than mixing their controllers, services, and repositories into `task`.
 
 ## First steps: start infrastructure, then run the apps locally
 
@@ -123,9 +135,9 @@ The Kubernetes manifests are minimal learning examples, not production deploymen
 ## Learning roadmap
 
 - [ ] **React + REST:** follow the task list flow from the UI to the Spring Boot controller and back.
-- [ ] **PostgreSQL:** trace a task through `TaskApplicationService` and the domain `TaskRepository` port; inspect the generated table and persistent data.
+- [ ] **PostgreSQL:** trace a task through `TaskService` and `TaskRepository`; inspect the generated table and persistent data.
 - [ ] **Playwright:** inspect `PlayWright-e2e/playwright.config.js` and `PlayWright-e2e/tests/tasks.spec.js`; experiment with locators, assertions, and test isolation.
-- [ ] **Kafka:** trace the `task.created` event from `TaskController` through `TaskEventPublisher` to `TaskEventConsumer`; inspect topic, key, payload, and consumer group.
+- [ ] **Kafka:** trace the `task.created` event contract from `task/event` through `messaging/kafka/KafkaTaskEventPublisher` to `KafkaTaskEventConsumer`; inspect topic, key, payload, and consumer group.
 - [ ] **Docker:** inspect `docker-compose.yml`; experiment with the Kafka and PostgreSQL services and their environment variables.
 - [ ] **Kubernetes:** inspect `k8s/`; learn Deployments, Services, health probes, image loading, and scaling.
 
